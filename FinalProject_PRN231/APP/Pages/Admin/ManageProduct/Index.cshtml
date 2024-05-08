@@ -1,0 +1,241 @@
+﻿@page
+@model APP.Pages.Admin.ManageProduct.IndexModel
+@{
+    Layout = "_LayoutAdmin";
+}
+@{
+    var isAdmin = User.Claims?.FirstOrDefault(x => x.Type.Split("/").Last().Equals("role"))?.Value == "1";
+    ViewData["Title"] = "Product Management";
+}
+<html>
+<head>
+    <style>
+        form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        input[type="text"], select {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            width: 200px;
+            max-width: 100%;
+        }
+
+        select {
+            background-color: #fff;
+        }
+
+        button[type="submit"] {
+            padding: 8px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+            button[type="submit"]:hover {
+                background-color: #0062cc;
+            }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+            .pagination a, .pagination span {
+                display: inline-block;
+                margin-right: 5px;
+                padding: 5px 10px;
+                border: 1px solid #ccc;
+                border-radius: 3px;
+                color: #333;
+                text-decoration: none;
+            }
+
+                .pagination a:hover {
+                    background-color: #f5f5f5;
+                }
+
+            .pagination span {
+                background-color: #333;
+                color: #fff;
+            }
+
+                .pagination a.disabled, .pagination span.disabled {
+                    pointer-events: none;
+                    opacity: 0.5;
+                    cursor: default;
+                }
+
+        .button {
+            font: bold 11px Arial;
+            text-decoration: none;
+            background-color: #EEEEEE;
+            color: #333333;
+            padding: 2px 6px 2px 6px;
+            border-top: 1px solid #CCCCCC;
+            border-right: 1px solid #333333;
+            border-bottom: 1px solid #333333;
+            border-left: 1px solid #CCCCCC;
+        }
+
+    </style>
+</head>
+<body>
+    @if (Model.OperationResult != null && Model.OperationResult.Status == BusinessObject.Common.CommonStatus.Failed)
+    {
+        <div><span style="color:red">This record is used in others table. Can not delete</span></div>
+    }
+    else if (Model.OperationResult != null)
+    {
+        <div><span style="color:green">Delete successful!</span></div>
+    }
+    <form method="get">
+        <label for="search">Search:</label>
+        <input type="text" id="search" placeholder="Input name to search..." name="searchText" value="@Model.ProductQuery.SearchText" />
+        <label for="category">Category:</label>
+        <select id="category" name="categoryId">
+            <option value="">All categories</option>
+            @foreach (var category in Model.Categories)
+            {
+                if (!string.IsNullOrEmpty(Model.ProductQuery.CategoryId) && category.CategoryId == Model.ProductQuery.CategoryId)
+                {
+                    <option value="@category.CategoryId" selected="selected">@category.CategoryName</option>
+                }
+                else
+                {
+                    <option value="@category.CategoryId">@category.CategoryName</option>
+                }
+
+            }
+        </select>
+        <label for="price-range">Price range:</label>
+        <select id="price-range" name="priceRange">
+            @{
+
+                if (!string.IsNullOrEmpty(Model.ProductQuery.PriceRange))
+                {
+                    <option value="@Model.ProductQuery.PriceRange" selected="selected"> $@Model.ProductQuery.PriceRange</option>
+                }
+            }
+            <option value="">All prices</option>
+            <option value="0-50">$0-50</option>
+            <option value="50-100">$50-100</option>
+            <option value="100-200">$100-200</option>
+            <option value="200+">$200+</option>
+        </select>
+        <button type="submit">Search</button>
+    </form>
+    @if (isAdmin)
+    {
+        <div style="margin-bottom:20px">
+            <a href="/Admin/ManageProduct/Create">Create</a>
+        </div>
+    }
+    <table>
+        <thead>
+            <tr>
+                <th>Product Id</th>
+                <th>Product Name</th>
+                @*<th>Units On Order</th>*@
+                <th>Unit Price</th>
+                <th>Units in Stock</th>
+                <th>Reorder Level</th>
+                <th>Image</th>
+                @if (isAdmin)
+                {
+                    <th></th>
+                }
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Products)
+            {
+                <tr>
+                    <td>@item.ProductId</td>
+                    <td>@item.ProductName</td>
+                    @*<td>@item.UnitsOnOrder</td>*@
+                    <td>@item.UnitPrice</td>
+                    <td>@item.UnitsInStock</td>
+                    <td>@item.ReorderLevel</td>
+                    <td><img src="@item.Image" alt="Product 1"></td>
+                    @if (isAdmin)
+                    {
+                        <td><a href="/admin/manageProduct/update?id=@item.ProductId">Update</a> <a asp-page-handler="delete" asp-route-id="@item.ProductId" onclick="return confirm('Are you sure?')">Delete</a></td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+    @{
+        var pageNumber = Model.ProductQuery.Pagination.PageNumber;
+        var searchText = Model.ProductQuery.SearchText ?? string.Empty;
+        var categoryId = Model.ProductQuery.CategoryId ?? string.Empty;
+        var priceRange = Model.ProductQuery.PriceRange ?? string.Empty;
+        var totalPages = Model.TotalPages;
+        var startPage = Model.StartPage;
+        var endPage = Model.EndPage;
+    }
+
+    @if (totalPages > 1)
+    {
+        <div class="pagination">
+            @if (pageNumber > 1)
+            {
+                <a href="?pageNumber=@(pageNumber - 1)&searchText=@searchText&categoryId=@categoryId&priceRange=@priceRange">Previous</a>
+            }
+
+            @for (int i = @startPage; i <= @endPage; i++)
+            {
+                if (i == pageNumber)
+                {
+                    <span>@i</span>
+                }
+                else
+                {
+                    <a href="?pageNumber=@i&searchText=@searchText&categoryId=@categoryId&priceRange=@priceRange">@i</a>
+                }
+            }
+
+            @if (pageNumber < totalPages)
+            {
+                <a href="?pageNumber=@(pageNumber + 1)&searchText=@searchText&categoryId=@categoryId&priceRange=@priceRange">Next</a>
+            }
+        </div>
+    }
+
+
+</body>
+</html>

@@ -1,0 +1,88 @@
+﻿@page
+@model APP.Pages.Product.DetailsModel
+@{
+}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+
+    header {
+        background-color: #333;
+        color: #fff;
+        padding: 1rem;
+        text-align: center;
+    }
+
+        header h1 {
+            margin: 0;
+        }
+
+    main {
+        padding: 2rem;
+    }
+
+    .product-details {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+    }
+
+    .product-image {
+        flex: 1;
+        max-width: 50%;
+    }
+
+        .product-image img {
+            max-width: 100%;
+        }
+
+    .product-info {
+        flex: 1;
+        padding: 1rem;
+    }
+
+        .product-info h2 {
+            margin: 0;
+        }
+
+        .product-info .price {
+            font-weight: bold;
+        }
+
+        .product-info .description {
+            margin-bottom: 1rem;
+        }
+
+    button {
+        background-color: #333;
+        color: #fff;
+        border: none;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+        button:hover {
+            background-color: #555;
+        }
+</style>
+<main>
+    <section class="product-details">
+        <div class="product-image">
+            <img src="https://cdn2.cellphones.com.vn/x,webp,q100/media/wysiwyg/laptop/May-tinh-de-ban-11.jpg" alt="Product Name">
+        </div>
+        <div class="product-info">
+            <h2>Product Name</h2>
+            <p class="price">$19.99</p>
+            <p class="description">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ac velit euismod,
+                dignissim dolor ac, laoreet ipsum. Suspendisse potenti. Quisque auctor ac nisi vel
+                rhoncus. Nam convallis id odio sit amet pharetra.
+            </p>
+            <button>Add to Cart</button>
+        </div>
+    </section>
+</main>

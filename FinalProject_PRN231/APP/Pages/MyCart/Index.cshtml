@@ -1,0 +1,118 @@
+﻿@page
+@model APP.Pages.MyCart.IndexModel
+@{
+    ViewData["Title"] = "My Cart";
+}
+@Html.AntiForgeryToken()
+@{
+}
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+
+    thead {
+        background-color: #eee;
+    }
+
+    th, td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+        td img {
+            max-width: 100px;
+            max-height: 100px;
+        }
+
+    tfoot td {
+        text-align: right;
+        font-weight: bold;
+    }
+
+    tfoot tr:last-child td {
+        border-top: 2px solid #000;
+    }
+
+    input[type="number"] {
+        width: 50px;
+        padding: 5px;
+        text-align: center;
+    }
+</style>
+<div>
+    <h2>My Cart</h2>
+</div>
+@if (Model.Cart.Items.Count > 0)
+{
+    decimal total = 0;
+    <form asp-page="/Payment/Index" method="get">
+        <table id="cart-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Image</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    @*<th></th>*@
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Cart.Items)
+                {
+                    var totalAmountPerItem = item.Product.UnitPrice * item.Quantity;
+                    total += (decimal)totalAmountPerItem;
+                    <tr id="@item.Product.ProductId">
+                        <td>@item.Product.ProductName</td>
+                        <td><img src="@item.Product.Image" alt="Item 1"></td>
+                        <td>@item.Product.UnitPrice</td>
+                        <td id="update-cart"><input type="number" id="quantity" onclick="redirect(@item.Product.ProductId)" name="item1-quantity" min="1" value="@item.Quantity"></td>
+                        <td>@totalAmountPerItem</td>
+                        @*<td><a class="btn btn-danger">Delete</a></td>*@
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td style="text-align:start" colspan="4">Total</td>
+                    <td style="text-align:start" colspan="2">@total</td>
+                </tr>
+            </tfoot>
+        </table>
+        <button type="submit">Checkout</button>
+    </form>
+}
+else
+{
+    <div style="text-align:center">
+        <h2>Don't have any items</h2>
+    </div>
+}
+<script>
+    function redirect(productId) {
+        var inputQuantity = document.getElementById("quantity").value;
+        console.log(inputQuantity);
+        $.ajax({
+            type: 'POST',
+            url: '../mycart/index?handler=AddToCart',
+            //dataType: 'string',
+            data: { productId: productId, quantity: inputQuantity },
+            headers: {
+                RequestVerificationToken: $('input:hidden[name="__RequestVerificationToken"]').val()
+            },
+            success: function () {
+                //connection.invoke("UpdateCart");
+                location.reload();
+                alert("Update successful");
+            },
+            error: function (xhr, status, error) {
+                console.error(xhr.responseText);
+            }
+        });
+    }
+</script>
+

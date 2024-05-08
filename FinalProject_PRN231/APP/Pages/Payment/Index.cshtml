@@ -1,0 +1,160 @@
+﻿@page
+@model APP.Pages.Payment.IndexModel
+@{
+    ViewData["Title"] = "Payment";
+    var msg = TempData["msg"] as string;
+}
+<style>
+    form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 20px;
+        width: 50%;
+    }
+
+    label {
+        font-size: 16px;
+        margin-top: 10px;
+    }
+
+    input {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+    button {
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    input:required, input:invalid {
+        border-color: #cc0000;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+
+    thead {
+        background-color: #eee;
+    }
+
+    th, td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+        td img {
+            max-width: 100px;
+            max-height: 100px;
+        }
+
+    tfoot td {
+        text-align: right;
+        font-weight: bold;
+    }
+
+    tfoot tr:last-child td {
+        border-top: 2px solid #000;
+    }
+
+    input[type="number"] {
+        width: 50px;
+        padding: 5px;
+        text-align: center;
+    }
+</style>
+
+<div style="text-align:center">
+    @*<h2>Payment Information</h2>*@
+    <form method="post">
+        @if (!string.IsNullOrEmpty(msg))
+        {
+            <div><span style="color:forestgreen">@msg</span></div>
+        }
+        <label for="ship-name">Ship Name:</label>
+        <input type="text" id="ship-name" name="shipName" required>
+
+        <label for="ship-address">Ship Address:</label>
+        <input type="text" id="ship-address" name="shipAddress" required>
+
+        <label for="ship-city">Ship City:</label>
+        <input type="text" id="ship-city" name="shipCity" required>
+
+        <label for="phone">Phone:</label>
+        <input type="tel" id="phone" name="phone" required>
+
+        <label for="shipped-date">Shipped Date:</label>
+        <input type="date" id="shipped-date" name="shippedDate" required>
+
+        <label for="order-date">Shipped Date:</label>
+        <input type="date" id="order-" name="orderDate" required>
+
+        <label for="required-date">Shipped Date:</label>
+        <input type="date" id="required-date" name="requiredDate" required>
+
+        <button type="submit">Submit Payment</button>
+    </form>
+</div>
+
+<div>
+    <h2>List items orders</h2>
+</div>
+@if (Model.Cart.Items.Count > 0)
+{
+    decimal total = 0;
+    <table id="cart-table">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Image</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Cart.Items)
+            {
+                var totalAmountPerItem = item.Product.UnitPrice * item.Quantity;
+                total += (decimal)totalAmountPerItem;
+                <tr id="@item.Product.ProductId">
+                    <td>@item.Product.ProductName</td>
+                    <td><img src="@item.Product.Image" alt="Item 1"></td>
+                    <td>@item.Product.UnitPrice</td>
+                    <td id="update-cart">@item.Quantity</td>
+                    <td colspan="2">@totalAmountPerItem</td>
+                    @*<td><a class="btn btn-danger">Delete</a></td>*@
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td style="text-align:start" colspan="4">Total</td>
+                <td style="text-align:start" colspan="2">@total</td>
+            </tr>
+        </tfoot>
+    </table>
+}
+else
+{
+    <div style="text-align:center">
+        <h2>Don't have any items</h2>
+    </div>
+}
+

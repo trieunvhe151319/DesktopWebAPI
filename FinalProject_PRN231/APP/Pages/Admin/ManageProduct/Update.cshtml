@@ -1,0 +1,111 @@
+﻿@page
+@model APP.Pages.Admin.ManageProduct.UpdateModel
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Product Management";
+}
+<head>
+    <style>
+        .form-container {
+            width: 300px;
+            margin: 0 auto;
+        }
+
+        .form-field {
+            margin-bottom: 10px;
+        }
+
+            .form-field label {
+                display: block;
+                margin-bottom: 5px;
+            }
+
+            .form-field select,
+            .form-field input[type="text"],
+            .form-field input[type="number"] {
+                width: 100%;
+                padding: 5px;
+            }
+
+            .form-field input[type="submit"] {
+                background-color: #4CAF50;
+                color: white;
+                padding: 10px 20px;
+                border: none;
+                cursor: pointer;
+            }
+
+                .form-field input[type="submit"]:hover {
+                    background-color: #45a049;
+                }
+    </style>
+</head>
+<body>
+    <h2 style="text-align:center">Update Product</h2>
+    <div class="form-container">
+        @if (Model.OperationResult != null)
+        {
+            @if (Model.OperationResult.Status == BusinessObject.Common.CommonStatus.Success)
+            {
+                <span style="color:green">Update successfully!</span>
+            }
+            else
+            {
+                <span style="color:red"> @Model.OperationResult.ResultMessage</span>
+            }
+        }
+
+        <form asp-page="update" asp-page-handler="update" method="post">
+            <div class="form-field">
+                <label for="productId">Product ID:</label>
+                <input type="text" readonly id="productId" name="productId" value="@Model.Product.ProductId" required>
+            </div>
+
+            <div class="form-field">
+                <label for="categoryId">Category:</label>
+                <select id="categoryId" name="categoryId" required>
+                    <option value="">Select a category</option>
+                    @foreach (var item in Model.Categories)
+                    {
+                        @if (Model.Product.CategoryId == item.CategoryId)
+                        {
+                            <option selected value="@item.CategoryId">@item.CategoryName</option>
+                        }
+                        else
+                        {
+                            <option value="@item.CategoryId">@item.CategoryName</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="form-field">
+                <label for="productName">Product Name:</label>
+                <input type="text" id="productName" name="productName" value="@Model.Product.ProductName" required>
+            </div>
+            <div class="form-field">
+                <label for="image">Image:</label>
+                <input type="text" id="image" name="image" value="@Model.Product.Image" required>
+            </div>
+
+            @*<div class="form-field">
+                <label for="weight">Weight:</label>
+                <input type="number" id="weight" name="weight" step="0.01" value="@Model.Product.Weight" required>
+            </div>*@
+
+            <div class="form-field">
+                <label for="unitPrice">Unit Price:</label>
+                <input type="number" id="unitPrice" name="unitPrice" step="0.01" value="@Model.Product.UnitPrice" required>
+            </div>
+
+            <div class="form-field">
+                <label for="unitsInStock">Units in Stock:</label>
+                <input type="number" id="unitsInStock" name="unitsInStock" value="@Model.Product.UnitsInStock" required>
+            </div>
+
+            <div class="form-field">
+                <input type="submit" value="Submit">
+            </div>
+        </form>
+    </div>
+</body>

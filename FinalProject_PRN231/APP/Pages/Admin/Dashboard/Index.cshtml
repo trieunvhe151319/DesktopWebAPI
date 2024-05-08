@@ -1,0 +1,119 @@
+﻿@page
+@using System.Web;
+@model APP.Pages.Admin.Dashboard.IndexModel
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Dashboard";
+}
+<h2 class="text-center alert-primary text-info">Shop Online Statistic</h2>
+<h4 class="text-danger m-5">Revenue By Month</h4>
+<div>
+    <canvas style="width:100%" id="myChart1"></canvas>
+</div>
+<h4 class="text-danger m-5">Top 5 Best Sellers</h4>
+<div>
+    <canvas style="width:100%" id="myChart2"></canvas>
+</div>
+<h4 class="text-danger m-5">Top 5 Users</h4>
+<div>
+    <canvas style="width:100%" id="myChart3"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const ctx = document.getElementById('myChart1');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [@String.Join(",", Model.ReportModel.Revenue.Select(x => $"{x.Month}.{x.Year}").ToArray())],
+            datasets: [{
+                label: 'Revenue',
+                data: [@String.Join(",", Model.ReportModel.Revenue.Select(x => x.revenueMonth))],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    const ctx2 = document.getElementById('myChart2');
+    new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: @Html.Raw(Json.Serialize(Model.ReportModel.BestSellers.Select(x => HttpUtility.JavaScriptStringEncode(x.ProductName)))),
+            datasets: [{
+                label: 'Total Sell Quantity',
+                data: [@String.Join(",", Model.ReportModel.BestSellers.Select(x => x.Count))],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            layout: {
+                padding: {
+                    left: 10,
+                    right: 10,
+                    top: 0,
+                    bottom: 0
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: false,
+            barPercentage: 0.5,
+            categoryPercentage: 0.5,
+        }
+    });
+
+    const ctx3 = document.getElementById('myChart3');
+    new Chart(ctx3, {
+        type: 'bar',
+        data: {
+            labels: @Html.Raw(Json.Serialize(Model.ReportModel.TopUsers.Select(x => HttpUtility.JavaScriptStringEncode(x.Username)))),
+            datasets: [{
+                label: 'Total Bill',
+                data: [@String.Join(",", Model.ReportModel.TopUsers.Select(x => x.TotalBill))],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            layout: {
+                padding: {
+                    left: 10,
+                    right: 10,
+                    top: 0,
+                    bottom: 0
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: false,
+            barPercentage: 0.5,
+            categoryPercentage: 0.5,
+        }
+    });
+</script>
+

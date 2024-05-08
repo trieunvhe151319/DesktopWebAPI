@@ -1,0 +1,120 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+@Html.AntiForgeryToken()
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+
+    header {
+        background-color: #333;
+        color: #fff;
+        padding: 1rem;
+        text-align: center;
+    }
+
+        header h1 {
+            margin: 0;
+        }
+
+    main {
+        padding: 2rem;
+    }
+
+    .products {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        grid-gap: 2rem;
+    }
+
+    .product {
+        border: 1px solid #ddd;
+        padding: 1rem;
+        text-align: center;
+    }
+
+        .product img {
+            max-width: 100%;
+        }
+
+        .product h2 {
+            margin: 0.5rem 0;
+        }
+
+        .product p {
+            margin: 0;
+        }
+
+        .product .price {
+            font-weight: bold;
+        }
+
+    button {
+        background-color: #333;
+        color: #fff;
+        border: none;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+        button:hover {
+            background-color: #555;
+        }
+
+    footer {
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        padding: 1rem;
+    }
+</style>
+<main>
+    <div style="text-align:center">
+        <h1>Hosttest Products</h1>
+    </div>
+    <section class="products">
+        <!-- Add your hottest products here -->
+        @foreach (var item in Model.HottestProducts)
+        {
+            <div class="product">
+                <img src="@item.Image" alt="Product 1">
+                <h4>@item.ProductName</h4>
+                <span class="price">@item.UnitPrice</span>
+                <input class="btn btn-outline-primary btn-sm" onclick="redirect(@item.ProductId)" type="button" value="ADD TO CART">
+            </div>
+        }
+        
+
+       
+
+        <!-- Add more products as needed -->
+    </section>
+</main>
+<script>
+    function redirect(a) {
+        $.ajax({
+            type: 'POST',
+            url: '../mycart/index?handler=AddToCart',
+            //dataType: 'string',
+            data: { productId: a },
+            headers: {
+                RequestVerificationToken: $('input:hidden[name="__RequestVerificationToken"]').val()
+            },
+            success: function () {
+                //connection.invoke("UpdateCart");
+                console.log("add successful")
+                alert("Add successful")
+            },
+            error: function (xhr, status, error) {
+                console.error(xhr.responseText);
+            }
+        });
+    }
+
+</script>
